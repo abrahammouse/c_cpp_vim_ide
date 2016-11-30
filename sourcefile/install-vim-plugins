@@ -2,7 +2,7 @@
 
 # .ycm_extra_conf.py
 curl -fLo ~/.ycm_extra_conf.py \
-    https://raw.githubusercontent.com/HmyBmny/vimrc/master/ycm_extra_conf.py
+    https://raw.githubusercontent.com/abrahammouse/c_cpp_vim_ide/master/ycm_extra_conf.py
 
 # plug.vim
 curl --insecure -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -10,6 +10,6 @@ curl --insecure -fLo ~/.vim/autoload/plug.vim --create-dirs \
 
 # .vimrc
 curl -fLo ~/.vimrc \
-    https://raw.githubusercontent.com/HmyBmny/vimrc/master/vimrc
+    https://raw.githubusercontent.com/abrahammouse/c_cpp_vim_ide/master/vimrc
 
 vim +PlugInstall
