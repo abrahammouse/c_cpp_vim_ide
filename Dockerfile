@@ -17,7 +17,6 @@ RUN mkdir -p /root/.vim/undofiles \
 RUN timeout 20m vim +PlugInstall +qall || true
 
 ADD config/. /root/
-COPY sourcefile/NERD_tree.vim /root/.vim/plugged/nerdtree/plugin/NERD_tree.vim
 
 EXPOSE 22
 ENTRYPOINT service ssh restart && bash
