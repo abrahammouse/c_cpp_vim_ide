@@ -11,8 +11,8 @@ RUN apt-get update \
  && apt-get --force-yes install -y build-essential cmake python-dev clang-format-3.5 xdg-utils nodejs-legacy wmctrl ack-grep software-properties-common python-software-properties\
  && add-apt-repository ppa:jonathonf/vim \
  && apt-get update \
- && sudo apt-get upgrade --force-yes \
- && apt-get install vim --upgrade --force-yes \
+ && sudo apt-get upgrade -y \
+ && apt-get install vim --upgrade -y \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
  
@@ -20,8 +20,7 @@ RUN mkdir -p /root/.vim/undofiles \
  && curl -o - https://raw.githubusercontent.com/abrahammouse/c_cpp_vim_ide/master/sourcefile/install-vim-plugins | sh
 
 ADD config/. /root/
-RUN timeout 3m vim || true
-COPY bugfix/NERD_tree.vim /root/.vim/plugged/nerdtree/plugin/NERD_tree.vim
+COPY sourcefile/NERD_tree.vim /root/.vim/plugged/nerdtree/plugin/NERD_tree.vim
 
 EXPOSE 22
 ENTRYPOINT service ssh restart && bash

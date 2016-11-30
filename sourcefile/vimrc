@@ -11,6 +11,8 @@ set nocompatible
 silent! if plug#begin('~/.vim/plugged')
 
 Plug 'junegunn/vim-easy-align', { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
+Plug 'klen/python-mode', { 'for': 'python' }
+Plug 'fatih/vim-go', { 'for': 'go' }
 
 " Colors
 Plug 'altercation/vim-colors-solarized'
