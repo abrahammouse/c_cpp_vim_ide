@@ -2,20 +2,31 @@ FROM ubuntu:14.04
 MAINTAINER abrahammouse(abrahammouse@gmail.com)
 
 RUN apt-get update \
- && apt-get --force-yes install -y curl vim exuberant-ctags git vim-nox openssh-server python-pip build-essential python-dev cmake clang-format-3.5 xdg-utils nodejs-legacy wmctrl ack-grep software-properties-common python-software-properties\
- && add-apt-repository ppa:jonathonf/vim \
- && apt-get update \
- && apt-get upgrade -y \
- && apt-get install vim --upgrade -y \
+ && apt-get --force-yes install -y \
+	libncurses5-dev libgnome2-dev libgnomeui-dev \
+    libgtk2.0-dev libatk1.0-dev libbonoboui2-dev \
+    libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
+    python3-dev ruby-dev lua5.1 lua5.1-dev libperl-dev exuberant-ctags \
+	git make cmake gcc clang openssh-server\
+ && cd /root \
+ && git clone https://github.com/vim/vim.git \
+ && cd vim \
+ && ./configure --with-features=huge \
+	--enable-multibyte \
+	--enable-rubyinterp=yes \
+	--enable-pythoninterp=yes \
+	--with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu \
+	--enable-python3interp=yes \
+	--with-python3-config-dir=/usr/lib/python3.4/config-3.4m-x86_64-linux-gnu \
+	--enable-perlinterp=yes \
+	--enable-luainterp=yes \
+	--enable-gui=gtk2 --enable-cscope --prefix=/usr \
+ && make VIMRUNTIMEDIR=/usr/share/vim/vim80 \
+ && make install \
+ && curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN pip install pep8 flake8 pyflakes isort yapf
  
-RUN mkdir -p /root/.vim/undofiles \
- && curl -o - https://raw.githubusercontent.com/abrahammouse/c_cpp_vim_ide/master/sourcefile/install-vim-plugins | sh
- 
-RUN timeout 20m vim +PlugInstall +qall || true
-
 ADD config/. /root/
 
 EXPOSE 22
