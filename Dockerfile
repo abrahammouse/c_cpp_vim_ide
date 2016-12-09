@@ -34,7 +34,7 @@ RUN timeout 10m vim +PlugInstall +qall || true
 COPY fix_putty/NERD_tree.vim /root/.vim/plugged/nerdtree/plugin/NERD_tree.vim
 COPY fix_putty/.vimrc /root/.vimrc
 
-RUN /root/.vim/plugged/YouCompleteMe/install.py --all
+RUN /root/.vim/plugged/YouCompleteMe/install.py --clang-completer
 
 EXPOSE 22
 ENTRYPOINT service ssh restart && clear
