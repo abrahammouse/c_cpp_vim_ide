@@ -7,7 +7,7 @@ RUN apt-get update \
     libgtk2.0-dev libatk1.0-dev libbonoboui2-dev \
     libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
     python3-dev ruby-dev lua5.1 lua5.1-dev libperl-dev exuberant-ctags \
-	git make cmake gcc clang openssh-server\
+	git curl make cmake gcc clang openssh-server\
  && cd /root \
  && git clone https://github.com/vim/vim.git \
  && cd vim \
