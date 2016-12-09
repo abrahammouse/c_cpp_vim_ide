@@ -113,7 +113,7 @@ call plug#end()
 
 " ÅäÉ«·½°¸
 set background=dark
-"colorscheme solarized
+colorscheme solarized
 "colorscheme molokai
 "colorscheme phd
 

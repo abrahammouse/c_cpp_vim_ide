@@ -25,9 +25,16 @@ RUN apt-get update \
  && make install \
  && curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
  && apt-get clean \
- && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/vim
  
 ADD config/. /root/
 
+RUN timeout 10m vim +PlugInstall +qall || true
+
+COPY fix_putty/NERD_tree.vim /root/.vim/plugged/nerdtree/plugin/NERD_tree.vim
+COPY fix_putty/.vimrc /root/.vimrc
+
+RUN /root/.vim/plugged/YouCompleteMe/install.py --all
+
 EXPOSE 22
-ENTRYPOINT service ssh restart && bash
+ENTRYPOINT service ssh restart && clear
