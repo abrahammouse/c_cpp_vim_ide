@@ -78,7 +78,6 @@ call plug#begin('~/.vim/plugged')
 
 " Make sure you use single quotes
 
-Plug 'VundleVim/Vundle.vim'
 Plug 'altercation/vim-colors-solarized'
 Plug 'tomasr/molokai'
 Plug 'vim-scripts/phd'
@@ -99,7 +98,7 @@ Plug 'vim-scripts/DrawIt'
 Plug 'SirVer/ultisnips'
 Plug 'Valloric/YouCompleteMe'
 Plug 'derekwyatt/vim-protodef'
-Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'fholgado/minibufexpl.vim'
 Plug 'gcmt/wildfire.vim'
 Plug 'sjl/gundo.vim'
