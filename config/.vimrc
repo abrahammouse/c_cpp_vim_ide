@@ -175,7 +175,7 @@ set guifont=YaHei\ Consolas\ Hybrid\ 10.5
 set nowrap
 
 " 设置状态栏主题风格
-let g:Powerline_colorscheme='solarized256'
+"let g:Powerline_colorscheme='solarized256'
 
 " <<
 
