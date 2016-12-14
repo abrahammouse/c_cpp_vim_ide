@@ -37,4 +37,4 @@ COPY fix_putty/.vimrc /root/.vimrc
 RUN /root/.vim/plugged/YouCompleteMe/install.py --clang-completer
 
 EXPOSE 22
-ENTRYPOINT service ssh restart && clear
+ENTRYPOINT service ssh restart && bash
