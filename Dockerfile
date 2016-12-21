@@ -31,6 +31,7 @@ ADD config/. /root/
 
 RUN timeout 20m vim +PlugInstall +qall || true
 
+
 COPY fix_putty/NERD_tree.vim /root/.vim/plugged/nerdtree/plugin/NERD_tree.vim
 COPY fix_putty/.vimrc /root/.vimrc
 
