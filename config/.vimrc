@@ -1,521 +1,452 @@
-" 更新时间：2016-03-30 12:15:21
-
-" 定义快捷键的前缀，即 <Leader>
-let mapleader=";"
-
-" >>
-" 文件类型侦测
-
-" 开启文件类型侦测
-filetype on
-" 根据侦测到的不同类型加载对应的插件
-filetype plugin on
-
-" <<
-
-" >>
-" vim 自身（非插件）快捷键
-
-" 定义快捷键到行首和行尾
-nmap LB 0
-nmap LE $
-
-" 设置快捷键将选中文本块复制至系统剪贴板
-vnoremap <Leader>y "+y
-" 设置快捷键将系统剪贴板内容粘贴至vim
-nmap <Leader>p "+p
-
-" 定义快捷键关闭当前分割窗口
-nmap <Leader>q :q<CR>
-" 定义快捷键保存当前窗口内容
-nmap <Leader>w :w<CR>
-" 定义快捷键保存所有窗口内容并退出 vim
-nmap <Leader>WQ :wa<CR>:q<CR>
-" 不做任何保存，直接退出 vim
-nmap <Leader>Q :qa!<CR>
-
-" 设置快捷键遍历子窗口
-" 依次遍历
-nnoremap nw <C-W><C-W>
-" 跳转至右方的窗口
-nnoremap <Leader>lw <C-W>l
-" 跳转至方的窗口
-nnoremap <Leader>hw <C-W>h
-" 跳转至上方的子窗口
-nnoremap <Leader>kw <C-W>k
-" 跳转至下方的子窗口
-nnoremap <Leader>jw <C-W>j
-
-" 定义快捷键在结对符之间跳转
-nmap <Leader>M %
-
-" <<
-
-" 让配置变更立即生效
-autocmd BufWritePost $MYVIMRC source $MYVIMRC
-
-" >>
-" 其他
-
-" 开启实时搜索功能
-set incsearch
-
-" 搜索时大小写不敏感
-set ignorecase
-
-" 关闭兼容模式
 set nocompatible
 
-" vim 自身命令行模式智能补全
-set wildmenu
-
-" <<
-
+" <<<<
 " >>>>
-" 插件安装
+" VIM-PLUG BLOCK
 
-call plug#begin('~/.vim/plugged')
+silent! if plug#begin('~/.vim/plugged')
 
-" Make sure you use single quotes
-
+" Colors
 Plug 'altercation/vim-colors-solarized'
-Plug 'tomasr/molokai'
-Plug 'vim-scripts/phd'
-Plug 'Lokaltog/vim-powerline'
-Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'derekwyatt/vim-fswitch'
-Plug 'kshenoy/vim-signature'
-Plug 'vim-scripts/BOOKMARKS--Mark-and-Highlight-Full-Lines'
-Plug 'majutsushi/tagbar'
-Plug 'vim-scripts/indexer.tar.gz'
-Plug 'vim-scripts/DfrankUtil'
-Plug 'vim-scripts/vimprj'
-Plug 'dyng/ctrlsf.vim'
-Plug 'terryma/vim-multiple-cursors'
-Plug 'scrooloose/nerdcommenter'
-Plug 'vim-scripts/DrawIt'
-Plug 'SirVer/ultisnips'
-Plug 'Valloric/YouCompleteMe'
-Plug 'derekwyatt/vim-protodef'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'fholgado/minibufexpl.vim'
-Plug 'gcmt/wildfire.vim'
-Plug 'sjl/gundo.vim'
-Plug 'Lokaltog/vim-easymotion'
-Plug 'suan/vim-instant-markdown'
-Plug 'lilydjwg/fcitx.vim'
+Plug 'sheerun/vim-polyglot'
 
-" Add plugins to &runtimepath
+" Edit
+Plug 'SirVer/ultisnips'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'matze/vim-move'
+Plug 'jiangmiao/auto-pairs'
+Plug 'kana/vim-operator-user'
+Plug 'gcmt/wildfire.vim'
+
+" Browsing
+Plug 'Yggdroot/indentLine'
+Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle'      }
+Plug 'derekwyatt/vim-fswitch', { 'for': ['c', 'cpp', 'objc'] }
+Plug 'derekwyatt/vim-protodef', { 'for': ['c', 'cpp', 'objc'] }
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+
+augroup nerd_loader
+autocmd!
+autocmd VimEnter * silent! autocmd! FileExplorer
+autocmd BufEnter,BufNew *
+    \  if isdirectory(expand('<amatch>'))
+    \|   call plug#load('nerdtree')
+    \|   execute 'autocmd! nerd_loader'
+    \| endif
+augroup END
+
+
+" Lint
+Plug 'scrooloose/syntastic', { 'on': 'SyntasticCheck' }
+
+Plug 'fholgado/minibufexpl.vim'
+Plug 'sjl/gundo.vim'
+Plug 'dyng/ctrlsf.vim'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'suan/vim-instant-markdown', { 'for': 'markdown' }
+
+function! BuildYCM(info)
+if a:info.status == 'installed' || a:info.force
+!./install.py --clang-completer
+endif
+endfunction
+
+Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+
 call plug#end()
+endif
 
 " <<<<
+" >>>>
+" BASIC SETTINGS
 
-" 配色方案
-set background=dark
-"colorscheme solarized
-"colorscheme molokai
-"colorscheme phd
+let mapleader = ';'
 
-" >>
-" 营造专注气氛
+set encoding=utf-8
 
-" 禁止光标闪烁
+" Allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+
+" Store lots of :cmdline history
+set history=500
+
+" Show line numbers
+set nu
+
+set nowrap
+
+" Autoindent when starting new line
+set autoindent
+set smartindent
+set lazyredraw
+
+" Ignore case when searching
+set ignorecase 
+
+" Don't ignore case when search has capital letter
+set smartcase
+
+" Enable highlighted case-insensitive incremential search
+set incsearch
+
+" Enble search highlighting
+set hlsearch
+
+" Always show window statuses
+set laststatus=2
+
+" Statusline style
+set statusline=
+set statusline+=%7*\[%n]                                  "buffernr
+set statusline+=%1*\ %<%F\                                "File+path
+set statusline+=%2*\ %y\                                  "FileType
+set statusline+=%3*\ %{''.(&fenc!=''?&fenc:&enc).''}      "Encoding
+set statusline+=%3*\ %{(&bomb?\",BOM\":\"\")}\            "Encoding2
+set statusline+=%4*\ %{&ff}\                              "FileFormat (dos/unix..) 
+set statusline+=%8*\ %=\ row:%l/%L\ (%p%%)\             "Rownumber/total (%)
+set statusline+=%9*\ col:%c\                            "Colnr
+set statusline+=%0*\ \ %m%r%w\ %P\ \                      "Modified? Readonly? Top/bot.
+
+" Show the size of block one selected in visual mode
+set showcmd
+
+" Hide buffers
+set hidden
+set visualbell
+
+" Indent using four spaces
+set expandtab smarttab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+
 set gcr=a:block-blinkon0
 
-" 禁止显示滚动条
 set guioptions-=l
 set guioptions-=L
 set guioptions-=r
 set guioptions-=R
-
-" 禁止显示菜单和工具条
 set guioptions-=m
 set guioptions-=T
 
-" 将外部命令 wmctrl 控制窗口最大化的命令行参数封装成一个 vim 的函数
-fun! ToggleFullscreen()
-	call system("wmctrl -ir " . v:windowid . " -b toggle,fullscreen")
+function! ToggleFullscreen()
+call system("wmctrl -ir " . v:windowid . " -b toggle,fullscreen")
 endf
-" 全屏开/关快捷键
+
 map <silent> <F11> :call ToggleFullscreen()<CR>
-"" 启动 vim 时自动全屏
-"autocmd VimEnter * call ToggleFullscreen()
+imap <silent> <F11> <esc>:call ToggleFullscreen()<CR>
+" autocmd VimEnter * call ToggleFullscreen()
 
-" <<
-
-" >>
-" 辅助信息
-
-" 总是显示状态栏
-set laststatus=2
-
-" 显示光标当前位置
+" Show the line and column number of the cursor position
 set ruler
 
-" 开启行号显示
-set number
-
-" 高亮显示当前行/列
+" Highlight line under cursor
 set cursorline
 set cursorcolumn
 
-" 高亮显示搜索结果
-set hlsearch
+" Disable output, vcs, archive, rails, temp and backup files
+set wildignore+=*.o,*.out,*.obj,.git,*.pyc,*.class
+set wildignore+=*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz
+set wildignore+=*.swp,*~,._*
 
-" <<
 
-" >>
-" 其他美化
+" <<<<
+" >>>>
+" MAPPINGS
 
-" 设置 gvim 显示字体
-set guifont=YaHei\ Consolas\ Hybrid\ 10.5
+" ----------------------------------------------------------------------------
+" Basic mappings
+" ----------------------------------------------------------------------------
 
-" 禁止折行
-set nowrap
+" Save
+inoremap <C-s>     <C-O>:w<cr>
+nnoremap <C-s>     :w<cr>
+nnoremap <leader>w :w<cr>
 
-" 设置状态栏主题风格
-"let g:Powerline_colorscheme='solarized256'
+" Copy
+vnoremap <Leader>y "+y
+nmap <Leader>p "+p
 
-" <<
+" Quit
+nnoremap <Leader>q :q<cr>
+nnoremap <Leader>Q :qa!<cr>
 
-" >>
-" 语法分析
+" Movement in insert mode
+inoremap <C-h> <C-o>h
+inoremap <C-j> <C-o>j
+inoremap <C-k> <C-o>k
+inoremap <C-l> <C-o>a
+inoremap <C-^> <C-o><C-^>
 
-" 开启语法高亮功能
-syntax enable
-" 允许用指定语法高亮配色方案替换默认方案
-syntax on
+" ----------------------------------------------------------------------------
+" Quickfix
+" ----------------------------------------------------------------------------
 
-" <<
+nnoremap ]q :cnext<cr>zz
+nnoremap [q :cprev<cr>zz
 
-" >>
-" 缩进
+" ----------------------------------------------------------------------------
+" <tab> / <s-tab> | Circular windows navigation
+" ----------------------------------------------------------------------------
 
-" 自适应不同语言的智能缩进
-filetype indent on
+nnoremap <tab>   <c-w>w
+nnoremap <S-tab> <c-w>W
+nnoremap <Leader>hw <C-W>h
+nnoremap <Leader>jw <C-W>j
+nnoremap <Leader>kw <C-W>k
+nnoremap <Leader>lw <C-W>l
 
-" 将制表符扩展为空格
-set expandtab
-" 设置编辑时制表符占用空格数
-set tabstop=4
-" 设置格式化时制表符占用空格数
-set shiftwidth=4
-" 让 vim 把连续数量的空格视为一个制表符
-set softtabstop=4
+" ----------------------------------------------------------------------------
+" :CopyRTF
+" ----------------------------------------------------------------------------
 
-" 缩进可视化插件 Indent Guides
-" 随 vim 自启动
-let g:indent_guides_enable_on_vim_startup=1
-" 从第二层开始可视化显示缩进
-let g:indent_guides_start_level=2
-" 色块宽度
-let g:indent_guides_guide_size=1
-" 快捷键 i 开/关缩进可视化
-nmap <silent> <Leader>i <Plug>IndentGuidesToggle
-
-" <<
-
-" >>
-" 代码折叠
-
-" 基于缩进或语法进行代码折叠
-"set foldmethod=indent
-set foldmethod=syntax
-" 启动 vim 时关闭折叠代码
-set nofoldenable
-
-" <<
-
-" >>
-" 接口与实现快速切换
-
-" *.cpp 和 *.h 间切换
-nmap <silent> <Leader>sw :FSHere<cr>
-
-" <<
-
-" >>
-" 代码收藏
-
-" 自定义 vim-signature 快捷键
-let g:SignatureMap = {
-        \ 'Leader'             :  "m",
-        \ 'PlaceNextMark'      :  "m,",
-        \ 'ToggleMarkAtLine'   :  "m.",
-        \ 'PurgeMarksAtLine'   :  "m-",
-        \ 'DeleteMark'         :  "dm",
-        \ 'PurgeMarks'         :  "mda",
-        \ 'PurgeMarkers'       :  "m<BS>",
-        \ 'GotoNextLineAlpha'  :  "']",
-        \ 'GotoPrevLineAlpha'  :  "'[",
-        \ 'GotoNextSpotAlpha'  :  "`]",
-        \ 'GotoPrevSpotAlpha'  :  "`[",
-        \ 'GotoNextLineByPos'  :  "]'",
-        \ 'GotoPrevLineByPos'  :  "['",
-        \ 'GotoNextSpotByPos'  :  "mn",
-        \ 'GotoPrevSpotByPos'  :  "mp",
-        \ 'GotoNextMarker'     :  "[+",
-        \ 'GotoPrevMarker'     :  "[-",
-        \ 'GotoNextMarkerAny'  :  "]=",
-        \ 'GotoPrevMarkerAny'  :  "[=",
-        \ 'ListLocalMarks'     :  "ms",
-        \ 'ListLocalMarkers'   :  "m?"
-        \ }
-
-" <<
-
-" >>
-" 标签列表
-
-" 设置 tagbar 子窗口的位置出现在主编辑区的左边
-let tagbar_left=1
-" 设置显示／隐藏标签列表子窗口的快捷键。速记：identifier list by tag
-nnoremap <Leader>ilt :TagbarToggle<CR>
-" 设置标签子窗口的宽度
-let tagbar_width=32
-" tagbar 子窗口中不显示冗余帮助信息
-let g:tagbar_compact=1
-" 设置 ctags 对哪些代码标识符生成标签
-let g:tagbar_type_cpp = {
-     \ 'ctagstype' : 'c++',
-     \ 'kinds'     : [
-         \ 'c:classes:0:1',
-         \ 'd:macros:0:1',
-         \ 'e:enumerators:0:0', 
-         \ 'f:functions:0:1',
-         \ 'g:enumeration:0:1',
-         \ 'l:local:0:1',
-         \ 'm:members:0:1',
-         \ 'n:namespaces:0:1',
-         \ 'p:functions_prototypes:0:1',
-         \ 's:structs:0:1',
-         \ 't:typedefs:0:1',
-         \ 'u:unions:0:1',
-         \ 'v:global:0:1',
-         \ 'x:external:0:1'
-     \ ],
-     \ 'sro'        : '::',
-     \ 'kind2scope' : {
-         \ 'g' : 'enum',
-         \ 'n' : 'namespace',
-         \ 'c' : 'class',
-         \ 's' : 'struct',
-         \ 'u' : 'union'
-     \ },
-     \ 'scope2kind' : {
-         \ 'enum'      : 'g',
-         \ 'namespace' : 'n',
-         \ 'class'     : 'c',
-         \ 'struct'    : 's',
-         \ 'union'     : 'u'
-     \ }
-\ }
-
-" <<
-
-" >>
-" 代码导航
- 
-" 基于标签的代码导航
-
-" 设置插件 indexer 调用 ctags 的参数
-" 默认 --c++-kinds=+p+l，重新设置为 --c++-kinds=+l+p+x+c+d+e+f+g+m+n+s+t+u+v
-" 默认 --fields=+iaS 不满足 YCM 要求，需改为 --fields=+iaSl
-let g:indexer_ctagsCommandLineOptions="--c++-kinds=+l+p+x+c+d+e+f+g+m+n+s+t+u+v --fields=+iaSl --extra=+q"
-
-" 正向遍历同名标签
-nmap <Leader>tn :tnext<CR>
-" 反向遍历同名标签
-nmap <Leader>tp :tprevious<CR>
-
-" 基于语义的代码导航
-
-nnoremap <leader>jc :YcmCompleter GoToDeclaration<CR>
-" 只能是 #include 或已打开的文件
-nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
-
-" <<
-
-" >>
-" 查找
-
-" 使用 ctrlsf.vim 插件在工程内全局查找光标所在关键字，设置快捷键。快捷键速记法：search in project
-nnoremap <Leader>sp :CtrlSF<CR>
-
-" <<
-
-" >>
-" 内容替换
-
-" 快捷替换
-let g:multi_cursor_next_key='<S-n>'
-let g:multi_cursor_skip_key='<S-k>'
-
-" 精准替换
-" 替换函数。参数说明：
-" confirm：是否替换前逐一确认
-" wholeword：是否整词匹配
-" replace：被替换字符串
-function! Replace(confirm, wholeword, replace)
-    wa
-    let flag = ''
-    if a:confirm
-        let flag .= 'gec'
-    else
-        let flag .= 'ge'
-    endif
-    let search = ''
-    if a:wholeword
-        let search .= '\<' . escape(expand('<cword>'), '/\.*$^~[') . '\>'
-    else
-        let search .= expand('<cword>')
-    endif
-    let replace = escape(a:replace, '/\&~')
-    execute 'argdo %s/' . search . '/' . replace . '/' . flag . '| update'
+function! s:colors(...)
+return filter(map(filter(split(globpath(&rtp, 'colors/*.vim'), "\n"),
+    \                  'v:val !~ "^/usr/"'),
+    \           'fnamemodify(v:val, ":t:r")'),
+    \       '!a:0 || stridx(v:val, a:1) >= 0')
 endfunction
-" 不确认、非整词
-nnoremap <Leader>R :call Replace(0, 0, input('Replace '.expand('<cword>').' with: '))<CR>
-" 不确认、整词
-nnoremap <Leader>rw :call Replace(0, 1, input('Replace '.expand('<cword>').' with: '))<CR>
-" 确认、非整词
-nnoremap <Leader>rc :call Replace(1, 0, input('Replace '.expand('<cword>').' with: '))<CR>
-" 确认、整词
-nnoremap <Leader>rcw :call Replace(1, 1, input('Replace '.expand('<cword>').' with: '))<CR>
-nnoremap <Leader>rwc :call Replace(1, 1, input('Replace '.expand('<cword>').' with: '))<CR>
 
-" <<
+" ----------------------------------------------------------------------------
+" <F8> | Color scheme selector
+" ----------------------------------------------------------------------------
+"  
+if has('gui_running')
+    set background=dark
+else
+    set background=light
+endif
+"let g:solarized_termcolors=256
+"colorschem solarized
 
-" 模板补全
-" UltiSnips 的 tab 键与 YCM 冲突，重新设定
+function! s:rotate_colors()
+if !exists('s:colors')
+let s:colors = s:colors()
+endif
+let name = remove(s:colors, 0)
+call add(s:colors, name)
+if has('gui_running')
+    set background=dark
+else
+    set background=light
+endif
+execute 'colorscheme' name
+redraw
+echo name
+endfunction
+
+nnoremap <silent> <F8> :call <SID>rotate_colors()<cr>
+inoremap <silent> <F8> <esc>:call <SID>rotate_colors()<cr>
+
+" <<<<
+" >>>>
+" PLUGINS
+
+" ----------------------------------------------------------------------------
+" ultisnips
+" ----------------------------------------------------------------------------
+
 let g:UltiSnipsSnippetDirectories=["mysnippets"]
 let g:UltiSnipsExpandTrigger="<leader><tab>"
 let g:UltiSnipsJumpForwardTrigger="<leader><tab>"
 let g:UltiSnipsJumpBackwardTrigger="<leader><s-tab>"
 
-" >>
-" YCM 补全
+" ----------------------------------------------------------------------------
+" vim-multiple-cursors
+" ----------------------------------------------------------------------------
 
-" YCM 补全菜单配色
-" 菜单
-highlight Pmenu ctermfg=2 ctermbg=3 guifg=#005f87 guibg=#EEE8D5
-" 选中项
-highlight PmenuSel ctermfg=2 ctermbg=3 guifg=#AFD700 guibg=#106900
+let g:multi_cursor_next_key='<S-n>'
+let g:multi_cursor_skip_key='<S-k>'
 
-" 补全功能在注释中同样有效
-let g:ycm_complete_in_comments=1
+" ----------------------------------------------------------------------------
+" vim-move
+" ----------------------------------------------------------------------------
 
-" 允许 vim 加载 .ycm_extra_conf.py 文件，不再提示
-let g:ycm_confirm_extra_conf=0
+let g:move_key_modifier = 'C'
 
-" 开启 YCM 标签补全引擎
-let g:ycm_collect_identifiers_from_tags_files=0
-"" 引入 C++ 标准库 tags
-"set tags+=/data/misc/software/app/vim/stdcpp.tags
-"set tags+=/data/misc/software/app/vim/sys.tags
+" ----------------------------------------------------------------------------
+" auto-pairs
+" ----------------------------------------------------------------------------
 
-" YCM 集成 OmniCppComplete 补全引擎，设置其快捷键
-inoremap <leader>; <C-x><C-o>
+" ----------------------------------------------------------------------------
+" vim-operator-user
+" ----------------------------------------------------------------------------
 
-" 补全内容不以分割子窗口形式出现，只显示补全列表
-set completeopt-=preview
+" ----------------------------------------------------------------------------
+" wildfire.vim
+" ----------------------------------------------------------------------------
 
-" 从第一个键入字符就开始罗列匹配项
-let g:ycm_min_num_of_chars_for_completion=1
+map <SPACE> <Plug>(wildfire-fuel)
+vmap <C-SPACE> <Plug>(wildfire-water)
 
-" 禁止缓存匹配项，每次都重新生成匹配项
-let g:ycm_cache_omnifunc=0
+" ----------------------------------------------------------------------------
+" indentLine
+" ----------------------------------------------------------------------------
 
-" 语法关键字补全
-let g:ycm_seed_identifiers_with_syntax=1
+let g:indentLine_setColors = 0
+let g:indentLine_char = '|'
 
-" <<
- 
-" >>
-" 由接口快速生成实现框架
+" ----------------------------------------------------------------------------
+" tarbar
+" ----------------------------------------------------------------------------
 
-" 成员函数的实现顺序与声明顺序一致
+inoremap <F2> <esc>:TagbarToggle<cr>
+nnoremap <F2> :TagbarToggle<cr>
+
+let tagbar_left=1
+let tagbar_width=32
+let g:tagbar_sort = 0
+let g:tagbar_compact=1
+let g:tagbar_type_cpp = {
+ \ 'ctagstype' : 'c++',
+ \ 'kinds'     : [
+     \ 'c:classes:0:1',
+     \ 'd:macros:0:1',
+     \ 'e:enumerators:0:0', 
+     \ 'f:functions:0:1',
+     \ 'g:enumeration:0:1',
+     \ 'l:local:0:1',
+     \ 'm:members:0:1',
+     \ 'n:namespaces:0:1',
+     \ 'p:functions_prototypes:0:1',
+     \ 's:structs:0:1',
+     \ 't:typedefs:0:1',
+     \ 'u:unions:0:1',
+     \ 'v:global:0:1',
+     \ 'x:external:0:1'
+ \ ],
+ \ 'sro'        : '::',
+ \ 'kind2scope' : {
+     \ 'g' : 'enum',
+     \ 'n' : 'namespace',
+     \ 'c' : 'class',
+     \ 's' : 'struct',
+     \ 'u' : 'union'
+ \ },
+ \ 'scope2kind' : {
+     \ 'enum'      : 'g',
+     \ 'namespace' : 'n',
+     \ 'class'     : 'c',
+     \ 'struct'    : 's',
+     \ 'union'     : 'u'
+ \ }
+\ }
+
+" ----------------------------------------------------------------------------
+" vim-fswitch
+" ----------------------------------------------------------------------------
+
+nmap <silent> <Leader>fs :FSHere<cr>
+
+" ----------------------------------------------------------------------------
+" vim-protodef
+" ----------------------------------------------------------------------------
+
+let g:protodefprotogetter='~/.vim/plugged/vim-protodef/pullproto.pl'
 let g:disable_protodef_sorting=1
 
-" <<
+" ----------------------------------------------------------------------------
+" nerdcommenter
+" ----------------------------------------------------------------------------
 
-" >>
-" 库信息参考
- 
-" 启用:Man命令查看各类man信息
-source $VIMRUNTIME/ftplugin/man.vim
+" ----------------------------------------------------------------------------
+" nerdtree
+" ----------------------------------------------------------------------------
 
-" 定义:Man命令查看各类man信息的快捷键
-nmap <Leader>man :Man 3 <cword><CR>
+inoremap <F3> <esc>:NERDTreeToggle<CR>
+nnoremap <F3> :NERDTreeToggle<CR>
 
-" <<
-
-" >>
-" 工程文件浏览
-
-" 使用 NERDTree 插件查看工程文件。设置快捷键，速记：file list
-nmap <Leader>z :NERDTreeToggle<CR>
-" 设置 NERDTree 子窗口宽度
 let NERDTreeWinSize=22
-" 设置 NERDTree 子窗口位置
 let NERDTreeWinPos="right"
-" 显示隐藏文件
-let NERDTreeShowHidden=1
-" NERDTree 子窗口中不显示冗余帮助信息
+let NERDTreeShowHidden=0
 let NERDTreeMinimalUI=1
-" 删除文件时自动删除文件对应 buffer
 let NERDTreeAutoDeleteBuffer=1
 
-" <<
+" ----------------------------------------------------------------------------
+" syntastic
+" ----------------------------------------------------------------------------
 
-" >>
-" 多文档编辑
- 
-" 显示/隐藏 MiniBufExplorer 窗口
-map <Leader>bl :MBEToggle<cr>
+let g:syntastic_javascript_checkers = ['standard']
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
 
-" buffer 切换快捷键
-map <C-Tab> :MBEbn<cr>
-map <C-S-Tab> :MBEbp<cr>
+" ----------------------------------------------------------------------------
+" minibufexpl
+" ----------------------------------------------------------------------------
 
-" <<
+inoremap <F4> <esc>:MBEToggle<cr>
+nnoremap <F4> :MBEToggle<cr>
 
+nnoremap ]b :bnext<cr>
+nnoremap [b :bprev<cr>
 
-" >>
-" 环境恢复
+" ----------------------------------------------------------------------------
+" gundo.vim
+" ----------------------------------------------------------------------------
 
-" 设置环境保存项
+nnoremap <Leader>ud :GundoToggle<CR>
+
 set sessionoptions="blank,globals,localoptions,tabpages,sesdir,folds,help,options,resize,winpos,winsize"
 
-" 保存 undo 历史。必须先行创建 .undo_history/
-set undodir=~/.undo_history/
+if !strlen(finddir('~/.vim/undofiles'))
+echo "undofiles[~/.vim/undofiles] not found. Now it's being created. Press ENTER or type command to continue."
+!mkdir -p ~/.vim/undofiles
+endif
+
+if v:version >= 703
+set undodir=~/.vim/undofiles
 set undofile
+set colorcolumn=+1 
+endif
 
-" 保存快捷键
-"map <leader>ss :mksession! my.vim<cr> :wviminfo! my.viminfo<cr>
-map <leader>ss :mksession! my.vim<cr>
+" ----------------------------------------------------------------------------
+" ctrlsf.vim
+" ----------------------------------------------------------------------------
 
-" 恢复快捷键
-"map <leader>rs :source my.vim<cr> :rviminfo my.viminfo<cr>
-map <leader>rs :source my.vim<cr>
+nnoremap <c-f> :CtrlSF<CR>
 
-" <<
- 
-" 设置快捷键实现一键编译及运行
-nmap <Leader>m :wa<CR> :cd build/<CR> :!rm -rf main<CR> :!cmake CMakeLists.txt<CR>:make<CR><CR> :cw<CR> :cd ..<CR>
-nmap <Leader>g :wa<CR>:cd build/<CR>:!rm -rf main<CR>:!cmake CMakeLists.txt<CR>:make<CR><CR>:cw<CR>:cd ..<CR>:!build/main<CR>
+" ----------------------------------------------------------------------------
+" ctrlp.vim
+" ----------------------------------------------------------------------------
 
-" >>
-" 快速选中结对符内的文本
- 
-" 快捷键
-map <SPACE> <Plug>(wildfire-fuel)
-vmap <S-SPACE> <Plug>(wildfire-water)
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
 
-" 适用于哪些结对符
-let g:wildfire_objects = ["i'", 'i"', "i)", "i]", "i}", "i>", "ip"]
+let g:ctrlp_map = '<s-p>'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn|vendor/bundle/*\|vendor/cache/*\|public\|spec)$',
+  \ 'file': '\v\.(exe|so|dll|swp|log|jpg|png|json)$',
+  \ }
 
-" <<
+" ----------------------------------------------------------------------------
+" vim-instant-markdown
+" ----------------------------------------------------------------------------
 
-" 调用 gundo 树
-nnoremap <Leader>ud :GundoToggle<CR>
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+
+let g:instant_markdown_slow = 1
+let g:instant_markdown_autostart = 0
+
+nnoremap <Leader>md :InstantMarkdownPreview<CR>
+
+" ----------------------------------------------------------------------------
+" YouCompleteMe
+" ----------------------------------------------------------------------------
+
+set completeopt-=preview
+
+nnoremap <leader>jc :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+inoremap <leader>; <C-x><C-o>
+
+highlight Pmenu ctermfg=2 ctermbg=3 guifg=#005f87 guibg=#EEE8D5
+highlight PmenuSel ctermfg=2 ctermbg=3 guifg=#AFD700 guibg=#106900
+
+let g:ycm_complete_in_comments=1
+let g:ycm_confirm_extra_conf=0
+let g:ycm_collect_identifiers_from_tags_files=0
+let g:ycm_min_num_of_chars_for_completion=1
+let g:ycm_cache_omnifunc=0
+let g:ycm_seed_identifiers_with_syntax=1
